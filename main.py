@@ -3,25 +3,26 @@ import os
 import requests
 import json
 import random
+from io import BytesIO
 from replit import db
 from keep_alive import keep_alive
+import dbd_generator
 
 client = discord.Client()
 
 #constants
 ENCOURAGEMENTS_NAME = "encouragements"
 RESPONDING_NAME = "responding"
-#end of constants
 
 sad_words = ["sad","depressed","unhappy","angry","miserable","depressing"]
 
 
 starter_encouragements = [
-  "Cheer up!",
-  "Hang in there.",
-  "Big Chale :(",
-  "You are a great person / bot!",
-  "No se awite compa uwu"
+  "chale",
+  "No se awite compa uwu",
+  "unas guamas o que",
+  "intenta de nuevo",
+  "bienvenido al mundo de las mariguanas"
 ]
 
 if RESPONDING_NAME not in db.keys():
@@ -64,14 +65,14 @@ async def on_message(message):
     options = starter_encouragements
     if ENCOURAGEMENTS_NAME in db.keys():
       options = options + db[ENCOURAGEMENTS_NAME]
-
-    if message.content.startswith('$inspire'):
-      quote = get_quote()
-      await message.channel.send(quote) # + "\n You have been inspired " + message.author)
   
     if any(word in msg for word in sad_words):
       await message.channel.send(random.choice(options))
-  
+
+  if message.content.startswith('$inspire'):
+      quote = get_quote()
+      await message.channel.send(quote) 
+
   if msg.startswith("$new"):
     encouraging_message = msg.split("$new ",1)[1]
     update_encouragements(encouraging_message)
@@ -101,6 +102,14 @@ async def on_message(message):
       db[RESPONDING_NAME] = False
       await message.channel.send("Responding is off.")
 
+  if msg.startswith("=perks"):
+    survivor_perks = dbd_generator.generateSurivorPerksBuild()
+    with BytesIO() as image_binary:
+      dbd_generator.generateImage(survivor_perks).save(image_binary, 'PNG')
+      image_binary.seek(0)
+      await message.channel.send("Here is your Build!: \n- {0} \n- {1} \n- {2} \n- {3}  ".format(survivor_perks[0][0],survivor_perks[1][0],survivor_perks[2][0],survivor_perks[3][0]),file=discord.File(fp=image_binary, filename='image.png'))
+
 
 keep_alive()
 client.run(os.getenv('DISCORD_TOKEN'))
+#print(os.getenv('COD_PASS'))
