@@ -105,9 +105,13 @@ async def on_message(message):
   if msg.startswith("=perks"):
     survivor_perks = dbd_generator.generateSurivorPerksBuild()
     with BytesIO() as image_binary:
-      dbd_generator.generateImage(survivor_perks).save(image_binary, 'PNG')
+      dbd_generator.generateBuildImage(survivor_perks).save(image_binary, 'PNG')
       image_binary.seek(0)
       await message.channel.send("Here is your Build!: \n- {0} \n- {1} \n- {2} \n- {3}  ".format(survivor_perks[0][0],survivor_perks[1][0],survivor_perks[2][0],survivor_perks[3][0]),file=discord.File(fp=image_binary, filename='image.png'))
+    with BytesIO() as second_image_binary:
+      dbd_generator.generatePerkImage(survivor_perks[4]).save(second_image_binary, 'PNG')
+      second_image_binary.seek(0)
+      await message.channel.send("And for the wildcard:\n- {0}  ".format(survivor_perks[4][0]),file=discord.File(fp=second_image_binary, filename='image.png'))
 
 
 keep_alive()

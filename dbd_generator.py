@@ -17,9 +17,15 @@ def generateSurivorPerksBuild():
       current_build.append(perk_and_link)
   return current_build
 
-def generateImage(current_build):
+def generateBuildImage(current_build):
   buildImage = Image.new('RGBA', imageBuildSize)
   for i in range(4):
     perkImage = Image.open(requests.get(current_build[i][1], stream=True).raw)
     buildImage.paste(perkImage, (imageSizeStandard*i, 0))
+  return buildImage
+
+def generatePerkImage(perk):
+  buildImage = Image.new('RGBA', imageBuildSize)
+  perkImage = Image.open(requests.get(perk[1], stream=True).raw)
+  buildImage.paste(perkImage,(0,0))
   return buildImage
